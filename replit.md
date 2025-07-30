@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains a Python-based network monitoring system designed to check temperature status on network switches via SSH. The system reads switch connection details from an Excel file, connects to each switch using Netmiko, executes temperature monitoring commands, and generates reports in both text and PDF formats with optional email distribution.
+This repository contains a Python-based network monitoring system designed to check temperature status on network switches via SSH. The system reads switch connection details from an Excel file, connects to each switch using Netmiko, executes temperature monitoring commands, and generates reports in both text and PDF formats with automatic email distribution. The system includes intelligent alert detection that highlights switches with warning or critical temperature conditions in both PDF reports and email notifications.
 
 ## User Preferences
 
@@ -35,8 +35,10 @@ The system operates as a batch processing tool that:
 
 ### Reporting System
 - **Text Output**: Basic console and string-based reporting
-- **PDF Generation**: ReportLab-based PDF document creation with custom formatting
-- **Email Distribution**: SMTP-based email sending with PDF attachments
+- **PDF Generation**: ReportLab-based PDF document creation with custom formatting and alert highlighting
+- **Email Distribution**: SMTP-based email sending with PDF attachments and alert-aware subject lines
+- **Alert Detection**: Automatic scanning for "warning" and "critical" conditions in switch output
+- **Alert Highlighting**: Visual emphasis of problematic switches in PDF reports and email notifications
 
 ### Configuration Management
 - **Excel-based Configuration**: Switch details stored in `switchFile.xlsx`

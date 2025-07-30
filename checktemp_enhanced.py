@@ -18,7 +18,38 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def create_pdf_report(text_content, pdf_filename):
+def analyze_output_for_alerts(text_content):
+    """
+    Analyze switch output for warning/critical conditions
+    Returns list of hostnames with alerts and alert summary
+    """
+    alert_hosts = []
+    alert_details = []
+    
+    sections = text_content.split('\n --- Output of')
+    
+    for section in sections[1:]:  # Skip first section (timestamp)
+        lines = section.split('\n')
+        hostname = "Unknown"
+        has_alert = False
+        
+        # Extract hostname from first line
+        if lines and 'on ' in lines[0]:
+            hostname = lines[0].split(' on ')[-1].strip()
+        
+        # Check for warning/critical conditions
+        for line in lines:
+            line_lower = line.lower()
+            if 'warning' in line_lower or 'critical' in line_lower:
+                has_alert = True
+                alert_details.append(f"{hostname}: {line.strip()}")
+        
+        if has_alert and hostname not in alert_hosts:
+            alert_hosts.append(hostname)
+    
+    return alert_hosts, alert_details
+
+def create_pdf_report(text_content, pdf_filename, alert_hosts=None, alert_details=None):
     """
     Convert text content to PDF format using reportlab
     """
@@ -33,7 +64,7 @@ def create_pdf_report(text_content, pdf_filename):
         # Get styles
         styles = getSampleStyleSheet()
         
-        # Create custom style for preformatted text
+        # Create custom styles
         code_style = ParagraphStyle(
             'Code',
             parent=styles['Normal'],
@@ -44,6 +75,24 @@ def create_pdf_report(text_content, pdf_filename):
             rightIndent=0
         )
         
+        alert_style = ParagraphStyle(
+            'Alert',
+            parent=styles['Heading2'],
+            textColor='red',
+            fontSize=12,
+            spaceAfter=6,
+            spaceBefore=6
+        )
+        
+        warning_style = ParagraphStyle(
+            'Warning',
+            parent=styles['Normal'],
+            textColor='red',
+            fontSize=10,
+            leftIndent=20,
+            spaceAfter=3
+        )
+        
         # Build story for PDF
         story = []
         
@@ -52,6 +101,21 @@ def create_pdf_report(text_content, pdf_filename):
         title = Paragraph("Cisco Switch Temperature Monitoring Report", title_style)
         story.append(title)
         story.append(Spacer(1, 12))
+        
+        # Add alert summary if there are any alerts
+        if alert_hosts and len(alert_hosts) > 0:
+            story.append(Paragraph("⚠️ TEMPERATURE ALERTS DETECTED", alert_style))
+            story.append(Paragraph(f"Affected Switches: {', '.join(alert_hosts)}", warning_style))
+            story.append(Spacer(1, 6))
+            
+            if alert_details:
+                story.append(Paragraph("Alert Details:", styles['Heading3']))
+                for detail in alert_details:
+                    story.append(Paragraph(f"• {detail}", warning_style))
+            
+            story.append(Spacer(1, 20))
+            story.append(Paragraph("Detailed Report:", styles['Heading2']))
+            story.append(Spacer(1, 12))
         
         # Split content into sections and add to PDF
         sections = text_content.split('\n --- Output of')
@@ -68,7 +132,12 @@ def create_pdf_report(text_content, pdf_filename):
                 lines = section_content.split('\n')
                 for line in lines:
                     if line.strip():
-                        story.append(Preformatted(line, code_style))
+                        # Highlight lines with warnings/critical in red
+                        line_lower = line.lower()
+                        if 'warning' in line_lower or 'critical' in line_lower:
+                            story.append(Paragraph(f"<font color='red'>{line}</font>", styles['Normal']))
+                        else:
+                            story.append(Preformatted(line, code_style))
                 story.append(Spacer(1, 12))
         
         # Build PDF
@@ -80,7 +149,7 @@ def create_pdf_report(text_content, pdf_filename):
         logger.error(f"Error creating PDF report: {str(e)}")
         return False
 
-def send_email_with_attachment(pdf_filename, text_filename, timestamp):
+def send_email_with_attachment(pdf_filename, text_filename, timestamp, alert_hosts=None, alert_details=None):
     """
     Send email with PDF attachment
     """
@@ -98,15 +167,41 @@ def send_email_with_attachment(pdf_filename, text_filename, timestamp):
         msg = MIMEMultipart()
         msg['From'] = sender_email
         msg['To'] = recipient_email
-        msg['Subject'] = f"Cisco switch device temperature update {timestamp}"
         
-        # Email body
-        body = f"""
+        # Modify subject based on alerts
+        if alert_hosts and len(alert_hosts) > 0:
+            msg['Subject'] = f"🚨 ALERT: Cisco switch device temperature update {timestamp} - Issues on {', '.join(alert_hosts)}"
+        else:
+            msg['Subject'] = f"Cisco switch device temperature update {timestamp}"
+        
+        # Email body with alert information
+        if alert_hosts and len(alert_hosts) > 0:
+            alert_summary = '\n'.join([f"    - {detail}" for detail in alert_details]) if alert_details else ""
+            body = f"""
+        ⚠️  TEMPERATURE ALERT DETECTED ⚠️
+        
+        Dear Network Administrator,
+        
+        IMMEDIATE ATTENTION REQUIRED: Temperature alerts have been detected on the following switches:
+        {', '.join(alert_hosts)}
+        
+        Alert Details:
+{alert_summary}
+        
+        Please investigate these temperature issues immediately to prevent potential equipment damage.
+        
+        Full temperature monitoring report generated on {timestamp} is attached.
+        
+        Best regards,
+        Network Monitoring System
+        """
+        else:
+            body = f"""
         Dear Network Administrator,
         
         Please find attached the Cisco switch temperature monitoring report generated on {timestamp}.
         
-        This automated report contains temperature readings from all monitored network switches.
+        All monitored network switches are operating within normal temperature ranges.
         
         Best regards,
         Network Monitoring System
@@ -231,15 +326,26 @@ def main():
         with open(text_filename, 'w') as f:
             f.write(outputsVar)
         
-        # Create PDF report
-        pdf_success = create_pdf_report(outputsVar, pdf_filename)
+        # Analyze output for temperature alerts
+        alert_hosts, alert_details = analyze_output_for_alerts(outputsVar)
+        
+        if alert_hosts:
+            logger.warning(f"Temperature alerts detected on switches: {', '.join(alert_hosts)}")
+        else:
+            logger.info("No temperature alerts detected - all switches operating normally")
+        
+        # Create PDF report with alert highlighting
+        pdf_success = create_pdf_report(outputsVar, pdf_filename, alert_hosts, alert_details)
         
         if pdf_success:
-            # Send email with attachments
-            email_success = send_email_with_attachment(pdf_filename, text_filename, time_str)
+            # Send email with attachments and alert information
+            email_success = send_email_with_attachment(pdf_filename, text_filename, time_str, alert_hosts, alert_details)
             
             if email_success:
-                logger.info("Temperature monitoring report sent successfully")
+                if alert_hosts:
+                    logger.info(f"ALERT EMAIL sent successfully for switches: {', '.join(alert_hosts)}")
+                else:
+                    logger.info("Temperature monitoring report sent successfully")
                 
                 # Clean up files if email was sent successfully (optional)
                 cleanup_option = os.getenv('CLEANUP_FILES_AFTER_EMAIL', 'false').lower()
@@ -253,7 +359,7 @@ def main():
             logger.error("Failed to create PDF report")
             
             # Try to send just the text file if PDF creation failed
-            email_success = send_email_with_attachment(None, text_filename, time_str)
+            email_success = send_email_with_attachment(None, text_filename, time_str, alert_hosts, alert_details)
             if email_success:
                 logger.info("Text report sent successfully (PDF creation failed)")
     
