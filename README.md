@@ -74,9 +74,13 @@ The `switchFile.xlsx` file should contain the following columns:
 Create a `.env` file in the project root with your email settings:
 
 ```env
-# SMTP Server Configuration
+# SMTP Server Configuration (Gmail example)
 SMTP_SERVER=smtp.gmail.com
 SMTP_PORT=587
+
+# For Outlook/Office 365, use:
+# SMTP_SERVER=smtp-mail.outlook.com
+# SMTP_PORT=587
 
 # Email Credentials
 SENDER_EMAIL=monitoring@yourcompany.com
@@ -87,16 +91,37 @@ RECIPIENT_EMAIL=admin@yourcompany.com
 CLEANUP_FILES_AFTER_EMAIL=false
 ```
 
-#### Gmail Setup
+#### Email Provider Configurations
+
+**Gmail Setup:**
 1. Enable 2-factor authentication on your Google account
 2. Generate an "App Password" in Google Account settings
 3. Use the app password (not your regular password) in `SENDER_PASSWORD`
+```env
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SENDER_EMAIL=your-email@gmail.com
+SENDER_PASSWORD=your-16-digit-app-password
+```
 
-#### Company Email Setup
-Contact your IT department for:
-- SMTP server address and port
-- Authentication requirements
-- Any firewall or security considerations
+**Outlook/Office 365 Setup:**
+1. Enable "App passwords" in Microsoft Account security settings (if 2FA is enabled)
+2. For corporate accounts, check with IT about authentication requirements
+```env
+SMTP_SERVER=smtp-mail.outlook.com
+SMTP_PORT=587
+SENDER_EMAIL=your-email@outlook.com
+SENDER_PASSWORD=your-password-or-app-password
+```
+
+**Corporate Exchange Server:**
+Contact your IT department for specific settings:
+```env
+SMTP_SERVER=mail.yourcompany.com
+SMTP_PORT=587  # or 25, 465 depending on configuration
+SENDER_EMAIL=your-email@yourcompany.com
+SENDER_PASSWORD=your-domain-password
+```
 
 ## Usage
 
