@@ -1,0 +1,31 @@
+Start Script at Time: 2025-07-30 20:26:36
+
+ --- Output of show env temp on SW-CORE-01 
+Temperature Status: Ok
+Sensor                 Status          Reading
+System Inlet           OK              23 Celsius
+System Outlet          OK              28 Celsius
+CPU Temperature        OK              42 Celsius
+Power Supply 1         OK              35 Celsius
+Power Supply 2         OK              33 Celsius
+
+
+ --- Output of show env temp on SW-ACCESS-02 
+Temperature Status: Ok
+Sensor                 Status          Reading
+System Inlet           OK              23 Celsius
+System Outlet          OK              28 Celsius
+CPU Temperature        OK              42 Celsius
+Power Supply 1         OK              35 Celsius
+Power Supply 2         OK              33 Celsius
+
+
+ --- Output of show env temp on SW-DIST-03 
+Temperature Status: Ok
+Sensor                 Status          Reading
+System Inlet           OK              23 Celsius
+System Outlet          OK              28 Celsius
+CPU Temperature        OK              42 Celsius
+Power Supply 1         OK              35 Celsius
+Power Supply 2         OK              33 Celsius
+

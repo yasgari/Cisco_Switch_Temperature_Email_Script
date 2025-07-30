@@ -1,0 +1,37 @@
+modules = ["python-3.11"]
+
+[nix]
+channel = "stable-25_05"
+packages = ["freetype", "glibcLocales"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Temperature Monitor"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "cisco_temp_monitor"
+
+[[workflows.workflow]]
+name = "Temperature Monitor"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pip install netmiko pandas openpyxl reportlab && python checktemp_enhanced.py"
+
+[[workflows.workflow]]
+name = "cisco_temp_monitor"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pip install netmiko pandas openpyxl reportlab && python checktemp_enhanced.py"

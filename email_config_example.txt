@@ -1,0 +1,30 @@
+EMAIL CONFIGURATION SETUP
+=========================
+
+To use the email functionality in your temperature monitoring script, you need to set up these environment variables:
+
+Required Email Settings:
+- SMTP_SERVER=smtp.gmail.com (for Gmail) or your company's SMTP server
+- SMTP_PORT=587 (for Gmail TLS) or 465 (for SSL)
+- SENDER_EMAIL=your-email@company.com
+- SENDER_PASSWORD=your-app-password (not your regular password for Gmail)
+- RECIPIENT_EMAIL=admin@company.com (who receives the reports)
+
+Optional Settings:
+- CLEANUP_FILES_AFTER_EMAIL=true (deletes files after successful email send)
+
+FOR GMAIL USERS:
+1. Enable 2-factor authentication on your Google account
+2. Generate an "App Password" in Google Account settings
+3. Use the app password (not your regular password)
+
+FOR COMPANY EMAIL:
+1. Contact your IT department for SMTP server details
+2. Some companies require specific authentication methods
+
+The script will send emails with:
+- Subject: "Cisco switch device temperature update [timestamp]"
+- Both PDF and text file attachments
+- Professional email body with timestamp
+
+If email sending fails, the files are kept locally for manual sending.
