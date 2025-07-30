@@ -43,7 +43,12 @@ An automated network monitoring system that checks temperature status on Cisco s
 
 2. **Install required packages**:
    ```bash
-   pip install -r requirements.txt
+   pip3 install -r project_requirements.txt
+   ```
+   
+   Or install packages individually:
+   ```bash
+   pip3 install netmiko pandas openpyxl reportlab python-dotenv
    ```
 
 3. **Configure switch connections**:
@@ -129,7 +134,7 @@ SENDER_PASSWORD=your-domain-password
 
 Run the temperature monitoring script:
 ```bash
-python checktemp_enhanced.py
+python3 checktemp_enhanced.py
 ```
 
 The script will:
@@ -144,7 +149,7 @@ The script will:
 
 To test the alert detection and PDF generation features:
 ```bash
-python test_alert_detection.py
+python3 test_alert_detection.py
 ```
 
 This creates sample reports with simulated warning and critical conditions.
@@ -153,7 +158,7 @@ This creates sample reports with simulated warning and critical conditions.
 
 To generate a template Excel file with sample data:
 ```bash
-python create_sample_excel.py
+python3 create_sample_excel.py
 ```
 
 ## Output Files
@@ -217,10 +222,10 @@ Create a scheduled task to run the script automatically.
 Add to crontab for regular execution:
 ```bash
 # Run every hour
-0 * * * * /path/to/python /path/to/checktemp_enhanced.py
+0 * * * * /path/to/python3 /path/to/checktemp_enhanced.py
 
 # Run daily at 6 AM
-0 6 * * * /path/to/python /path/to/checktemp_enhanced.py
+0 6 * * * /path/to/python3 /path/to/checktemp_enhanced.py
 ```
 
 ## Security Considerations
