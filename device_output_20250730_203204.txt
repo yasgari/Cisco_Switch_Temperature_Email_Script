@@ -1,0 +1,37 @@
+Start Script at Time: 2025-07-30 20:32:04
+
+ --- Error connecting to 192.168.1.10: TCP connection to device failed.
+
+Common causes of this problem are:
+1. Incorrect hostname or IP address.
+2. Wrong TCP port.
+3. Intermediate firewall blocking access.
+
+Device settings: cisco_ios 192.168.1.10:22
+
+
+
+
+ --- Error connecting to 192.168.1.11: TCP connection to device failed.
+
+Common causes of this problem are:
+1. Incorrect hostname or IP address.
+2. Wrong TCP port.
+3. Intermediate firewall blocking access.
+
+Device settings: cisco_ios 192.168.1.11:22
+
+
+
+
+ --- Error connecting to 10.0.0.5: TCP connection to device failed.
+
+Common causes of this problem are:
+1. Incorrect hostname or IP address.
+2. Wrong TCP port.
+3. Intermediate firewall blocking access.
+
+Device settings: cisco_ios 10.0.0.5:22
+
+
+
