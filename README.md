@@ -1,0 +1,232 @@
+# Cisco Switch Temperature Monitor
+
+An automated network monitoring system that checks temperature status on Cisco switches via SSH, generates professional PDF reports, and sends email alerts when warning or critical conditions are detected.
+
+## Features
+
+- **🌡️ Temperature Monitoring**: Automatically connects to multiple Cisco switches and executes temperature monitoring commands
+- **📊 Professional PDF Reports**: Generates formatted PDF reports with temperature readings from all monitored switches
+- **🚨 Intelligent Alert Detection**: Automatically detects and categorizes temperature conditions by severity
+- **🎨 Color-Coded PDF Reports**: Yellow text for warnings, red text for critical/catastrophic conditions
+- **📧 Smart Email Notifications**: Subject lines indicate severity level with appropriate urgency
+- **⚠️ Alert Prioritization**: Critical alerts shown first at top of PDF reports for immediate attention
+- **📝 Comprehensive Logging**: Detailed logging for troubleshooting and audit trails
+
+## Screenshots
+
+### Normal Temperature Report
+- Clean PDF layout with all switch temperature readings
+- Professional email notification with standard subject line
+
+### Color-Coded Alert Detection
+- **Critical Alerts**: Red text and headers, priority placement at top of PDF
+- **Warning Alerts**: Yellow/orange text for warnings, secondary placement
+- **Email Subject Lines**: 
+  - Critical: "🚨 CRITICAL ALERT: Cisco switch device temperature update [timestamp] - Critical issues on [switch names]"
+  - Warning: "⚠️ WARNING: Cisco switch device temperature update [timestamp] - Warnings on [switch names]"
+- **Visual Hierarchy**: Critical problems highlighted in red throughout the detailed report
+
+## Prerequisites
+
+- Python 3.7 or higher
+- Network access to target Cisco switches via SSH
+- Valid SSH credentials for switch access
+- SMTP server access for email functionality (Gmail, company email server, etc.)
+
+## Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/yourusername/cisco-temperature-monitor.git
+   cd cisco-temperature-monitor
+   ```
+
+2. **Install required packages**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Configure switch connections**:
+   - Edit `switchFile.xlsx` with your actual switch details
+   - Include: device_type, host, username, password, port, secret
+
+4. **Set up email configuration**:
+   - Copy `.env.example` to `.env`
+   - Edit `.env` with your email settings
+
+## Configuration
+
+### Switch Configuration File
+
+The `switchFile.xlsx` file should contain the following columns:
+
+| Column | Description | Example |
+|--------|-------------|---------|
+| device_type | Cisco device type | cisco_ios |
+| host | IP address or hostname | 192.168.1.10 |
+| username | SSH username | admin |
+| password | SSH password | yourpassword |
+| port | SSH port (usually 22) | 22 |
+| secret | Enable password (if required) | enablepass |
+
+### Email Configuration
+
+Create a `.env` file in the project root with your email settings:
+
+```env
+# SMTP Server Configuration
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+
+# Email Credentials
+SENDER_EMAIL=monitoring@yourcompany.com
+SENDER_PASSWORD=your-app-password
+RECIPIENT_EMAIL=admin@yourcompany.com
+
+# Optional Settings
+CLEANUP_FILES_AFTER_EMAIL=false
+```
+
+#### Gmail Setup
+1. Enable 2-factor authentication on your Google account
+2. Generate an "App Password" in Google Account settings
+3. Use the app password (not your regular password) in `SENDER_PASSWORD`
+
+#### Company Email Setup
+Contact your IT department for:
+- SMTP server address and port
+- Authentication requirements
+- Any firewall or security considerations
+
+## Usage
+
+### Basic Usage
+
+Run the temperature monitoring script:
+```bash
+python checktemp_enhanced.py
+```
+
+The script will:
+1. Read switch configurations from `switchFile.xlsx`
+2. Connect to each switch via SSH
+3. Execute temperature monitoring commands
+4. Analyze output for warning/critical conditions
+5. Generate PDF and text reports
+6. Send email notifications with attachments
+
+### Testing Without Real Switches
+
+To test the alert detection and PDF generation features:
+```bash
+python test_alert_detection.py
+```
+
+This creates sample reports with simulated warning and critical conditions.
+
+### Creating Sample Excel File
+
+To generate a template Excel file with sample data:
+```bash
+python create_sample_excel.py
+```
+
+## Output Files
+
+The script generates timestamped files:
+- `device_output_YYYYMMDD_HHMMSS.txt` - Raw text output from all switches
+- `device_temperature_report_YYYYMMDD_HHMMSS.pdf` - Professional PDF report
+
+## Alert Detection
+
+The system automatically scans switch output for:
+- Lines containing "warning" (case-insensitive)
+- Lines containing "critical" (case-insensitive)
+
+When alerts are detected:
+- **PDF Report**: Shows red warning banner at top with affected switch names
+- **Email Subject**: Modified to include "🚨 ALERT" and affected switch names
+- **Email Body**: Includes urgent attention notice and detailed alert information
+
+## Troubleshooting
+
+### Common Issues
+
+**Connection Failures:**
+```
+TCP connection to device failed
+```
+- Verify switch IP addresses and SSH connectivity
+- Check firewall rules and network access
+- Confirm SSH is enabled on switches
+
+**Excel File Errors:**
+```
+Excel file format cannot be determined
+```
+- Ensure `switchFile.xlsx` exists and is properly formatted
+- Try recreating the file using `create_sample_excel.py`
+
+**Email Authentication Errors:**
+```
+Username and Password not accepted
+```
+- For Gmail: Use app password, not regular password
+- Verify SMTP server settings in `.env` file
+- Check with IT department for company email requirements
+
+### Logging
+
+The script provides detailed logging output. Check the console for:
+- Connection status to each switch
+- Temperature alert detection results
+- PDF generation status
+- Email sending results
+
+## Scheduling
+
+### Windows Task Scheduler
+Create a scheduled task to run the script automatically.
+
+### Linux/Mac Cron
+Add to crontab for regular execution:
+```bash
+# Run every hour
+0 * * * * /path/to/python /path/to/checktemp_enhanced.py
+
+# Run daily at 6 AM
+0 6 * * * /path/to/python /path/to/checktemp_enhanced.py
+```
+
+## Security Considerations
+
+- Store credentials securely (use `.env` file, not hardcoded)
+- Limit SSH access to monitoring systems only
+- Use dedicated service accounts for switch access
+- Consider using SSH keys instead of passwords where possible
+- Regularly rotate passwords and app passwords
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -am 'Add new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For issues and questions:
+1. Check the troubleshooting section above
+2. Review the logs for detailed error information
+3. Open an issue in the GitHub repository
+
+## Acknowledgments
+
+- Built with [Netmiko](https://github.com/ktbyers/netmiko) for network device automation
+- PDF generation powered by [ReportLab](https://www.reportlab.com/)
+- Excel file handling via [Pandas](https://pandas.pydata.org/) and [OpenPyXL](https://openpyxl.readthedocs.io/)

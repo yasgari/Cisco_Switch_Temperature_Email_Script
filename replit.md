@@ -35,10 +35,11 @@ The system operates as a batch processing tool that:
 
 ### Reporting System
 - **Text Output**: Basic console and string-based reporting
-- **PDF Generation**: ReportLab-based PDF document creation with custom formatting and alert highlighting
-- **Email Distribution**: SMTP-based email sending with PDF attachments and alert-aware subject lines
-- **Alert Detection**: Automatic scanning for "warning" and "critical" conditions in switch output
-- **Alert Highlighting**: Visual emphasis of problematic switches in PDF reports and email notifications
+- **PDF Generation**: ReportLab-based PDF document creation with color-coded alert formatting
+- **Email Distribution**: SMTP-based email sending with PDF attachments and severity-aware subject lines
+- **Alert Detection**: Automatic scanning and categorization of temperature conditions by severity levels
+- **Color-Coded Highlighting**: Yellow text for warnings, red text for critical/catastrophic conditions
+- **Alert Prioritization**: Critical alerts displayed first at top of PDF reports with visual hierarchy
 
 ### Configuration Management
 - **Excel-based Configuration**: Switch details stored in `switchFile.xlsx`

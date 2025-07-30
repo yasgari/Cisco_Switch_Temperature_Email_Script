@@ -20,17 +20,20 @@ logger = logging.getLogger(__name__)
 def analyze_output_for_alerts(text_content):
     """
     Analyze switch output for warning/critical conditions
-    Returns list of hostnames with alerts and alert summary
+    Returns categorized alerts with severity levels
     """
-    alert_hosts = []
-    alert_details = []
+    warning_hosts = []
+    critical_hosts = []
+    warning_details = []
+    critical_details = []
     
     sections = text_content.split('\n --- Output of')
     
     for section in sections[1:]:  # Skip first section (timestamp)
         lines = section.split('\n')
         hostname = "Unknown"
-        has_alert = False
+        has_warning = False
+        has_critical = False
         
         # Extract hostname from first line
         if lines and 'on ' in lines[0]:
@@ -39,16 +42,22 @@ def analyze_output_for_alerts(text_content):
         # Check for warning/critical conditions
         for line in lines:
             line_lower = line.lower()
-            if 'warning' in line_lower or 'critical' in line_lower:
-                has_alert = True
-                alert_details.append(f"{hostname}: {line.strip()}")
+            if 'critical' in line_lower or 'catastrophic' in line_lower:
+                has_critical = True
+                critical_details.append(f"{hostname}: {line.strip()}")
+            elif 'warning' in line_lower:
+                has_warning = True
+                warning_details.append(f"{hostname}: {line.strip()}")
         
-        if has_alert and hostname not in alert_hosts:
-            alert_hosts.append(hostname)
+        # Add to appropriate lists (critical takes precedence)
+        if has_critical and hostname not in critical_hosts:
+            critical_hosts.append(hostname)
+        elif has_warning and hostname not in warning_hosts and hostname not in critical_hosts:
+            warning_hosts.append(hostname)
     
-    return alert_hosts, alert_details
+    return warning_hosts, critical_hosts, warning_details, critical_details
 
-def create_pdf_report(text_content, pdf_filename, alert_hosts=None, alert_details=None):
+def create_pdf_report(text_content, pdf_filename, warning_hosts=None, critical_hosts=None, warning_details=None, critical_details=None):
     """
     Convert text content to PDF format using reportlab
     """
@@ -101,19 +110,34 @@ def create_pdf_report(text_content, pdf_filename, alert_hosts=None, alert_detail
         story.append(title)
         story.append(Spacer(1, 12))
         
-        # Add alert summary if there are any alerts
-        if alert_hosts and len(alert_hosts) > 0:
-            story.append(Paragraph("⚠️ TEMPERATURE ALERTS DETECTED", alert_style))
-            story.append(Paragraph(f"Affected Switches: {', '.join(alert_hosts)}", warning_style))
+        # Add critical alerts first (if any)
+        if critical_hosts and len(critical_hosts) > 0:
+            story.append(Paragraph("🚨 CRITICAL TEMPERATURE ALERTS", alert_style))
+            story.append(Paragraph(f"Critical Switches: {', '.join(critical_hosts)}", warning_style))
             story.append(Spacer(1, 6))
             
-            if alert_details:
-                story.append(Paragraph("Alert Details:", styles['Heading3']))
-                for detail in alert_details:
+            if critical_details:
+                story.append(Paragraph("Critical Alert Details:", styles['Heading3']))
+                for detail in critical_details:
                     story.append(Paragraph(f"• {detail}", warning_style))
+            story.append(Spacer(1, 12))
+        
+        # Add warning alerts (if any)
+        if warning_hosts and len(warning_hosts) > 0:
+            story.append(Paragraph("⚠️ WARNING TEMPERATURE ALERTS", alert_style))
+            story.append(Paragraph(f"Warning Switches: {', '.join(warning_hosts)}", warning_style))
+            story.append(Spacer(1, 6))
             
-            story.append(Spacer(1, 20))
-            story.append(Paragraph("Detailed Report:", styles['Heading2']))
+            if warning_details:
+                story.append(Paragraph("Warning Alert Details:", styles['Heading3']))
+                for detail in warning_details:
+                    story.append(Paragraph(f"• {detail}", warning_style))
+            story.append(Spacer(1, 12))
+        
+        # Add separator if there were any alerts
+        if (critical_hosts and len(critical_hosts) > 0) or (warning_hosts and len(warning_hosts) > 0):
+            story.append(Spacer(1, 8))
+            story.append(Paragraph("Detailed Temperature Report:", styles['Heading2']))
             story.append(Spacer(1, 12))
         
         # Split content into sections and add to PDF
@@ -131,10 +155,12 @@ def create_pdf_report(text_content, pdf_filename, alert_hosts=None, alert_detail
                 lines = section_content.split('\n')
                 for line in lines:
                     if line.strip():
-                        # Highlight lines with warnings/critical in red
                         line_lower = line.lower()
-                        if 'warning' in line_lower or 'critical' in line_lower:
+                        # Color-code based on severity
+                        if 'critical' in line_lower or 'catastrophic' in line_lower:
                             story.append(Paragraph(f"<font color='red'>{line}</font>", styles['Normal']))
+                        elif 'warning' in line_lower:
+                            story.append(Paragraph(f"<font color='orange'>{line}</font>", styles['Normal']))
                         else:
                             story.append(Preformatted(line, code_style))
                 story.append(Spacer(1, 12))
@@ -195,7 +221,7 @@ Power Supply 2         CRITICAL        72 Celsius"""
     outputsVar += f'\n --- Output of show env temp on SW-DIST-03 \n{critical_output}\n\n'
     
     # Test alert detection
-    alert_hosts, alert_details = analyze_output_for_alerts(outputsVar)
+    warning_hosts, critical_hosts, warning_details, critical_details = analyze_output_for_alerts(outputsVar)
     
     # Generate output files
     text_filename = f'device_output_alert_test_{timestamp_safe}.txt'
@@ -207,16 +233,21 @@ Power Supply 2         CRITICAL        72 Celsius"""
         f.write(outputsVar)
     
     # Display alert detection results
-    if alert_hosts:
-        logger.warning(f"Alert detection test: Found alerts on {len(alert_hosts)} switches: {', '.join(alert_hosts)}")
+    all_alert_hosts = critical_hosts + warning_hosts
+    if all_alert_hosts:
+        if critical_hosts:
+            logger.error(f"Alert detection test: Found CRITICAL alerts on {len(critical_hosts)} switches: {', '.join(critical_hosts)}")
+        if warning_hosts:
+            logger.warning(f"Alert detection test: Found WARNING alerts on {len(warning_hosts)} switches: {', '.join(warning_hosts)}")
+        
         logger.info("Alert details:")
-        for detail in alert_details:
+        for detail in critical_details + warning_details:
             logger.info(f"  - {detail}")
     else:
         logger.info("Alert detection test: No alerts found")
     
-    # Create PDF report with alert highlighting
-    pdf_success = create_pdf_report(outputsVar, pdf_filename, alert_hosts, alert_details)
+    # Create PDF report with color-coded alert highlighting
+    pdf_success = create_pdf_report(outputsVar, pdf_filename, warning_hosts, critical_hosts, warning_details, critical_details)
     
     if pdf_success:
         logger.info("Alert detection test completed successfully!")
@@ -227,9 +258,14 @@ Power Supply 2         CRITICAL        72 Celsius"""
         print(f"\nAlert Detection Test Results:")
         print(f"✓ Text file created: {text_filename}")
         print(f"✓ PDF file created: {pdf_filename}")
-        if alert_hosts:
-            print(f"🚨 ALERTS DETECTED on switches: {', '.join(alert_hosts)}")
-            print(f"📧 Email would have alert subject: '🚨 ALERT: Cisco switch device temperature update {time_str} - Issues on {', '.join(alert_hosts)}'")
+        if all_alert_hosts:
+            if critical_hosts:
+                print(f"🚨 CRITICAL ALERTS DETECTED on switches: {', '.join(critical_hosts)} (RED text in PDF)")
+                print(f"📧 Email would have CRITICAL subject: '🚨 CRITICAL ALERT: Cisco switch device temperature update {time_str} - Critical issues on {', '.join(critical_hosts)}'")
+            if warning_hosts:
+                print(f"⚠️ WARNING ALERTS DETECTED on switches: {', '.join(warning_hosts)} (YELLOW text in PDF)")
+                if not critical_hosts:  # Only show warning email subject if no critical alerts
+                    print(f"📧 Email would have WARNING subject: '⚠️ WARNING: Cisco switch device temperature update {time_str} - Warnings on {', '.join(warning_hosts)}'")
         else:
             print(f"✓ No alerts detected - normal email would be sent")
     else:
