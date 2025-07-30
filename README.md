@@ -37,8 +37,8 @@ An automated network monitoring system that checks temperature status on Cisco s
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/cisco-temperature-monitor.git
-   cd cisco-temperature-monitor
+   git clone https://github.com/yasgari/Cisco_Switch_Temperature_Email_Script.git
+   cd Cisco_Switch_Temperature_Email_Script
    ```
 
 2. **Install required packages**:
