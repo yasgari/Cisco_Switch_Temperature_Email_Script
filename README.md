@@ -175,6 +175,19 @@ python3 test_alert_detection.py
 
 This creates sample reports with simulated warning and critical conditions.
 
+### Automated Scheduling
+
+To run the script automatically every hour on Linux/Ubuntu systems, see the [Linux Setup Guide](LINUX_SETUP.md) for detailed instructions.
+
+Quick setup:
+```bash
+# Open cron editor
+crontab -e
+
+# Add this line (replace with your actual project path):
+0 * * * * cd /path/to/your/project && python3 checktemp_enhanced.py >> /var/log/temp_monitor.log 2>&1
+```
+
 ### Creating Sample Excel File
 
 To generate a template Excel file with sample data:
