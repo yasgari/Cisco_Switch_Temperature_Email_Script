@@ -148,7 +148,7 @@ def create_pdf_report(text_content, pdf_filename, warning_hosts=None, critical_h
             no_critical_style = ParagraphStyle(
                 'NoCritical',
                 parent=styles['Normal'],
-                textColor='green',
+                textColor='black',
                 fontSize=14,
                 alignment=1,  # Center alignment
                 spaceBefore=6,
