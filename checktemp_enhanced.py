@@ -143,10 +143,11 @@ def create_pdf_report(text_content, pdf_filename, warning_hosts=None, critical_h
         has_critical = critical_hosts and len(critical_hosts) > 0
         has_warnings = warning_hosts and len(warning_hosts) > 0
         
-        if not has_critical:
+        # Only show green "no critical alerts" when there are NO warnings AND NO critical alerts
+        if not has_critical and not has_warnings:
             # Create a green style for the "no critical alerts" message
-            no_critical_style = ParagraphStyle(
-                'NoCritical',
+            no_alerts_style = ParagraphStyle(
+                'NoAlerts',
                 parent=styles['Normal'],
                 textColor='green',
                 fontSize=14,
@@ -155,7 +156,21 @@ def create_pdf_report(text_content, pdf_filename, warning_hosts=None, critical_h
                 spaceAfter=12,
                 fontName='Helvetica-Bold'
             )
-            story.append(Paragraph("✅ NO CRITICAL ALERTS AT THIS TIME", no_critical_style))
+            story.append(Paragraph("✅ NO CRITICAL ALERTS AT THIS TIME", no_alerts_style))
+            story.append(Spacer(1, 12))
+        elif has_warnings and not has_critical:
+            # Show yellow status when there are warnings but no critical alerts
+            warning_status_style = ParagraphStyle(
+                'WarningStatus',
+                parent=styles['Normal'],
+                textColor='orange',
+                fontSize=14,
+                alignment=1,  # Center alignment
+                spaceBefore=6,
+                spaceAfter=12,
+                fontName='Helvetica-Bold'
+            )
+            story.append(Paragraph("⚠️ WARNING CONDITIONS DETECTED", warning_status_style))
             story.append(Spacer(1, 12))
         
         # Add critical alerts first (if any)
