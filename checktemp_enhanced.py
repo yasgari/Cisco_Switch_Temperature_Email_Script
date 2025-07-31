@@ -213,14 +213,18 @@ def send_email_with_attachment(pdf_filename, text_filename, timestamp, warning_h
         smtp_port = int(os.getenv('SMTP_PORT', '587'))
         sender_email = os.getenv('SENDER_EMAIL', 'sender@example.com')
         sender_password = os.getenv('SENDER_PASSWORD', 'password')
-        recipient_email = os.getenv('RECIPIENT_EMAIL', 'recipient@example.com')
+        recipient_emails_str = os.getenv('RECIPIENT_EMAIL', 'recipient@example.com')
         
-        logger.info(f"Preparing to send email to: {recipient_email}")
+        # Support multiple recipients - split by comma and clean up whitespace
+        recipient_emails = [email.strip() for email in recipient_emails_str.split(',')]
+        recipient_emails = [email for email in recipient_emails if email]  # Remove empty strings
+        
+        logger.info(f"Preparing to send email to: {', '.join(recipient_emails)}")
         
         # Create message
         msg = MIMEMultipart()
         msg['From'] = sender_email
-        msg['To'] = recipient_email
+        msg['To'] = ', '.join(recipient_emails)
         
         # Modify subject based on alerts (critical takes precedence)
         all_alert_hosts = []
@@ -312,10 +316,10 @@ def send_email_with_attachment(pdf_filename, text_filename, timestamp, warning_h
         server.starttls()
         server.login(sender_email, sender_password)
         text = msg.as_string()
-        server.sendmail(sender_email, recipient_email, text)
+        server.sendmail(sender_email, recipient_emails, text)  # Use list of recipients
         server.quit()
         
-        logger.info(f"Email sent successfully to {recipient_email}")
+        logger.info(f"Email sent successfully to {', '.join(recipient_emails)}")
         return True
         
     except Exception as e:

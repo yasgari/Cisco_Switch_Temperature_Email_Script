@@ -92,6 +92,9 @@ SENDER_EMAIL=monitoring@yourcompany.com
 SENDER_PASSWORD=your-app-password
 RECIPIENT_EMAIL=admin@yourcompany.com
 
+# Multiple Recipients (comma-separated)
+# RECIPIENT_EMAIL=admin@yourcompany.com,networkteam@yourcompany.com,manager@yourcompany.com
+
 # Optional Settings
 CLEANUP_FILES_AFTER_EMAIL=false
 ```
@@ -127,6 +130,24 @@ SMTP_PORT=587  # or 25, 465 depending on configuration
 SENDER_EMAIL=your-email@yourcompany.com
 SENDER_PASSWORD=your-domain-password
 ```
+
+#### Multiple Recipients
+
+The script supports sending emails to multiple recipients. Simply separate email addresses with commas in the `RECIPIENT_EMAIL` field:
+
+```env
+# Single recipient
+RECIPIENT_EMAIL=admin@yourcompany.com
+
+# Multiple recipients
+RECIPIENT_EMAIL=admin@yourcompany.com,networkteam@yourcompany.com,manager@yourcompany.com
+```
+
+**Important notes:**
+- All recipients will receive the same email with attachments
+- Critical and warning alerts will be sent to all recipients
+- Spaces around commas are automatically handled
+- Ensure all email addresses are valid to avoid delivery failures
 
 ## Usage
 

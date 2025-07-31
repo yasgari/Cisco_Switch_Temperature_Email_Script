@@ -36,7 +36,7 @@ The system operates as a batch processing tool that:
 ### Reporting System
 - **Text Output**: Basic console and string-based reporting
 - **PDF Generation**: ReportLab-based PDF document creation with color-coded alert formatting
-- **Email Distribution**: SMTP-based email sending with PDF attachments and severity-aware subject lines
+- **Email Distribution**: SMTP-based email sending with PDF attachments, severity-aware subject lines, and multiple recipient support
 - **Alert Detection**: Automatic scanning and categorization of temperature conditions by severity levels
 - **Color-Coded Highlighting**: Yellow text for warnings, red text for critical/catastrophic conditions
 - **Alert Prioritization**: Critical alerts displayed first at top of PDF reports with visual hierarchy
