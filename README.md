@@ -21,6 +21,7 @@ An automated network monitoring system that checks temperature status on Cisco s
 ### Color-Coded Alert Detection
 - **Critical Alerts**: Red text and headers, priority placement at top of PDF
 - **Warning Alerts**: Yellow/orange text for warnings, secondary placement
+- **Normal Status**: Green "✅ NO CRITICAL ALERTS AT THIS TIME" message when all systems are healthy
 - **Email Subject Lines**: 
   - Critical: "🚨 CRITICAL ALERT: Cisco switch device temperature update [timestamp] - Critical issues on [switch names]"
   - Warning: "⚠️ WARNING: Cisco switch device temperature update [timestamp] - Warnings on [switch names]"
@@ -168,12 +169,17 @@ The script will:
 
 ### Testing Without Real Switches
 
-To test the alert detection and PDF generation features:
+**To test alert detection and PDF generation features:**
 ```bash
 python3 test_alert_detection.py
 ```
-
 This creates sample reports with simulated warning and critical conditions.
+
+**To test normal operation (no alerts):**
+```bash
+python3 test_normal_temps.py
+```
+This creates sample reports showing the "NO CRITICAL ALERTS AT THIS TIME" message.
 
 ### Automated Scheduling
 

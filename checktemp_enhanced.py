@@ -139,8 +139,27 @@ def create_pdf_report(text_content, pdf_filename, warning_hosts=None, critical_h
         story.append(title)
         story.append(Spacer(1, 12))
         
+        # Add status message
+        has_critical = critical_hosts and len(critical_hosts) > 0
+        has_warnings = warning_hosts and len(warning_hosts) > 0
+        
+        if not has_critical:
+            # Create a green style for the "no critical alerts" message
+            no_critical_style = ParagraphStyle(
+                'NoCritical',
+                parent=styles['Normal'],
+                textColor='green',
+                fontSize=14,
+                alignment=1,  # Center alignment
+                spaceBefore=6,
+                spaceAfter=12,
+                fontName='Helvetica-Bold'
+            )
+            story.append(Paragraph("✅ NO CRITICAL ALERTS AT THIS TIME", no_critical_style))
+            story.append(Spacer(1, 12))
+        
         # Add critical alerts first (if any)
-        if critical_hosts and len(critical_hosts) > 0:
+        if has_critical:
             story.append(Paragraph("🚨 CRITICAL TEMPERATURE ALERTS", critical_header_style))
             story.append(Paragraph(f"Critical Switches: {', '.join(critical_hosts)}", critical_detail_style))
             story.append(Spacer(1, 6))
@@ -152,7 +171,7 @@ def create_pdf_report(text_content, pdf_filename, warning_hosts=None, critical_h
             story.append(Spacer(1, 12))
         
         # Add warning alerts (if any)
-        if warning_hosts and len(warning_hosts) > 0:
+        if has_warnings:
             story.append(Paragraph("⚠️ WARNING TEMPERATURE ALERTS", warning_header_style))
             story.append(Paragraph(f"Warning Switches: {', '.join(warning_hosts)}", warning_detail_style))
             story.append(Spacer(1, 6))
@@ -164,7 +183,7 @@ def create_pdf_report(text_content, pdf_filename, warning_hosts=None, critical_h
             story.append(Spacer(1, 12))
         
         # Add separator if there were any alerts
-        if (critical_hosts and len(critical_hosts) > 0) or (warning_hosts and len(warning_hosts) > 0):
+        if has_critical or has_warnings:
             story.append(Spacer(1, 8))
             story.append(Paragraph("Detailed Temperature Report:", styles['Heading2']))
             story.append(Spacer(1, 12))

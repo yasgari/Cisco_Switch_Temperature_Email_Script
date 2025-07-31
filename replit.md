@@ -40,6 +40,7 @@ The system operates as a batch processing tool that:
 - **Alert Detection**: Automatic scanning and categorization of temperature conditions by severity levels
 - **Color-Coded Highlighting**: Yellow text for warnings, red text for critical/catastrophic conditions
 - **Alert Prioritization**: Critical alerts displayed first at top of PDF reports with visual hierarchy
+- **Status Indicators**: Green "NO CRITICAL ALERTS AT THIS TIME" message displayed when no critical conditions are detected
 
 ### Configuration Management
 - **Excel-based Configuration**: Switch details stored in `switchFile.xlsx`
