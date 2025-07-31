@@ -87,6 +87,11 @@ The application is designed for:
 - Network access to target switches via SSH (typically port 22)
 - Optional SMTP server configuration for email reports
 
+### Platform-Specific Setup
+- **macOS Apple Silicon (M1/M2/M3)**: Requires ARM64-compatible packages due to architecture differences
+- **Linux**: Standard pip installation works directly
+- **Windows**: Standard pip installation works directly
+
 ### Output Management
 - Local file system storage for generated reports
 - Timestamp-based file naming for historical tracking

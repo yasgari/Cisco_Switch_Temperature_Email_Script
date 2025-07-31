@@ -1,0 +1,19 @@
+python3 checktemp_enhanced.py
+Traceback (most recent call last):
+  File "/Users/yasgari/Desktop/ProgrammabilityProjects/Cisco_Switch_Temperature_Email_Script/checktemp_enhanced.py", line 1, in <module>
+    from netmiko import ConnectHandler
+  File "/Users/yasgari/Library/Python/3.9/lib/python/site-packages/netmiko/__init__.py", line 40, in <module>
+    from netmiko.ssh_dispatcher import ConnectHandler  # noqa
+  File "/Users/yasgari/Library/Python/3.9/lib/python/site-packages/netmiko/ssh_dispatcher.py", line 6, in <module>
+    from netmiko.exceptions import ConnectionException
+  File "/Users/yasgari/Library/Python/3.9/lib/python/site-packages/netmiko/exceptions.py", line 1, in <module>
+    from paramiko.ssh_exception import SSHException
+  File "/Users/yasgari/Library/Python/3.9/lib/python/site-packages/paramiko/__init__.py", line 22, in <module>
+    from paramiko.transport import (
+  File "/Users/yasgari/Library/Python/3.9/lib/python/site-packages/paramiko/transport.py", line 33, in <module>
+    from cryptography.hazmat.primitives.ciphers import (
+  File "/Users/yasgari/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/primitives/ciphers/__init__.py", line 11, in <module>
+    from cryptography.hazmat.primitives.ciphers.base import (
+  File "/Users/yasgari/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/primitives/ciphers/base.py", line 10, in <module>
+    from cryptography.hazmat.bindings._rust import openssl as rust_openssl
+ImportError: dlopen(/Users/yasgari/Library/Python/3.9/lib/python/site-packages/_cffi_backend.cpython-39-darwin.so, 0x0002): tried: '/Users/yasgari/Library/Python/3.9/lib/python/site-packages/_cffi_backend.cpython-39-darwin.so' (mach-o file, but is an incompatible architecture (have 'x86_64', need 'arm64e' or 'arm64')), '/System/Volumes/Preboot/Cryptexes/OS/Users/yasgari/Library/Python/3.9/lib/python/site-packages/_cffi_backend.cpython-39-darwin.so' (no such file), '/Users/yasgari/Library/Python/3.9/lib/python/site-packages/_cffi_backend.cpython-39-darwin.so' (mach-o file, but is an incompatible architecture (have 'x86_64', need 'arm64e' or 'arm64'))

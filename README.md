@@ -52,6 +52,8 @@ An automated network monitoring system that checks temperature status on Cisco s
    pip3 install netmiko pandas openpyxl reportlab python-dotenv
    ```
 
+   **⚠️ macOS Users (Apple Silicon M1/M2/M3)**: If you get architecture errors, see [MACOS_SETUP.md](MACOS_SETUP.md) for detailed fix instructions.
+
 3. **Configure switch connections**:
    - Edit `switchFile.xlsx` with your actual switch details
    - Include: device_type, host, username, password, port, secret
