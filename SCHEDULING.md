@@ -2,6 +2,14 @@
 
 This guide explains how to set up the temperature monitoring script to run automatically every hour on different operating systems.
 
+## Platform-Specific Quick Setup
+
+**For Windows users:** See [WINDOWS_SETUP.md](WINDOWS_SETUP.md) for detailed Windows Task Scheduler instructions.
+
+**For Linux/Ubuntu users:** See [LINUX_SETUP.md](LINUX_SETUP.md) for detailed cron setup instructions.
+
+## General Overview
+
 ## Linux/macOS - Using Cron
 
 ### 1. Open the cron editor

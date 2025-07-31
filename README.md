@@ -177,15 +177,19 @@ This creates sample reports with simulated warning and critical conditions.
 
 ### Automated Scheduling
 
-To run the script automatically every hour on Linux/Ubuntu systems, see the [Linux Setup Guide](LINUX_SETUP.md) for detailed instructions.
-
-Quick setup:
+**For Linux/Ubuntu systems:**
+See the [Linux Setup Guide](LINUX_SETUP.md) for detailed instructions.
 ```bash
-# Open cron editor
+# Quick setup - open cron editor and add:
 crontab -e
-
-# Add this line (replace with your actual project path):
 0 * * * * cd /path/to/your/project && python3 checktemp_enhanced.py >> /var/log/temp_monitor.log 2>&1
+```
+
+**For Windows systems:**
+See the [Windows Setup Guide](WINDOWS_SETUP.md) for detailed instructions.
+```cmd
+# Quick setup - run as Administrator:
+schtasks /create /tn "Cisco Temperature Monitor" /tr "python C:\path\to\your\project\checktemp_enhanced.py" /sc hourly /st 09:00
 ```
 
 ### Creating Sample Excel File
